@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WatchTonight - Early Access</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #121932;
+      --text: #eef2ff;
+      --muted: #a8b1d1;
+      --accent: #7c9cff;
+      --accent-2: #9bffcc;
+      --border: rgba(255,255,255,0.08);
+      --max: 960px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(180deg, #0b1020 0%, #111935 100%);
+      color: var(--text);
+      line-height: 1.5;
+    }
+    .wrap {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 32px 20px 72px;
+    }
+    .hero {
+      padding: 56px 0 36px;
+    }
+    .eyebrow {
+      color: var(--accent-2);
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    h1 {
+      font-size: clamp(2.2rem, 5vw, 4.2rem);
+      line-height: 1.05;
+      margin: 0 0 16px;
+      letter-spacing: -0.03em;
+    }
+    .sub {
+      font-size: 1.15rem;
+      color: var(--muted);
+      max-width: 720px;
+      margin-bottom: 28px;
+    }
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    input, button, select, textarea {
+      font: inherit;
+    }
+    input {
+      min-width: 280px;
+      flex: 1;
+      padding: 14px 16px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+    }
+    button {
+      border: 0;
+      border-radius: 12px;
+      padding: 14px 18px;
+      background: var(--accent);
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .support {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 18px;
+      margin-top: 40px;
+    }
+    .card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px;
+    }
+    .card h3 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      font-size: 1.05rem;
+    }
+    .section {
+      margin-top: 52px;
+    }
+    .section h2 {
+      font-size: 1.7rem;
+      margin-bottom: 12px;
+    }
+    .section p, .section li {
+      color: var(--muted);
+    }
+    ul {
+      padding-left: 20px;
+    }
+    .micro {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-top: 10px;
+    }
+    .footer-cta {
+      margin-top: 52px;
+      padding: 24px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: rgba(255,255,255,0.04);
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="hero">
+      <div class="eyebrow">Early Access</div>
+      <h1>Stop scrolling. Get 3 great movies to watch tonight.</h1>
+      <p class="sub">WatchTonight gives you personalized movie picks based on the streaming services you already use, your taste, and what people are actually talking about right now.</p>
+      <form class="cta-row">
+        <input type="email" placeholder="Enter your email" aria-label="Email address" required />
+        <button type="submit">Join the early access list</button>
+      </form>
+      <div class="support">Designed to work across the streaming platforms you already subscribe to.</div>
+      <div class="micro">Early access users will help shape the first version.</div>
+    </section>
+
+    <section class="grid">
+      <div class="card">
+        <h3>Tell us what you have</h3>
+        <p>Choose the streaming services you already subscribe to.</p>
+      </div>
+      <div class="card">
+        <h3>Teach it your taste</h3>
+        <p>Rate movies, share what you liked or did not like, and improve recommendations over time.</p>
+      </div>
+      <div class="card">
+        <h3>Get tonight’s top 3 picks</h3>
+        <p>No endless browsing. Just three strong movie recommendations you can actually watch right now.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Why it matters</h2>
+      <p>You already have access to more movies than you can realistically sort through. WatchTonight is built to cut through the noise and help you make a fast, confident choice.</p>
+      <ul>
+        <li>No more wasting 20 minutes browsing</li>
+        <li>Personalized to your taste</li>
+        <li>Filtered by the streaming services you already use</li>
+        <li>Built for fast, confident decisions</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>What you get</h2>
+      <ul>
+        <li>3 movie picks each day</li>
+        <li>Where to watch each one</li>
+        <li>Why each fits your taste</li>
+        <li>A single strongest pick when you want the easiest decision</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>What it feels like</h2>
+      <p>Instead of giving you 50 options, WatchTonight gives you a short list you can actually act on.</p>
+      <div class="card">
+        <h3>Tonight's Top 3 Movie Picks</h3>
+        <p><strong>1. Ex Machina</strong><br />Max<br /><span style="color: #a8b1d1;">Smart, tense sci-fi with strong atmosphere and lasting recommendation value.</span></p>
+        <p><strong>2. Palm Springs</strong><br />Hulu<br /><span style="color: #a8b1d1;">Funny, clever, and easy to say yes to when you want something lighter.</span></p>
+        <p><strong>3. Michael Clayton</strong><br />Prime Video<br /><span style="color: #a8b1d1;">Sharp adult drama with serious rewatchable credibility.</span></p>
+        <p><strong>If you only watch one tonight:</strong><br />Ex Machina</p>
+      </div>
+    </section>
+
+    <section class="footer-cta">
+      <h2>Join early access</h2>
+      <p>Be one of the first to try WatchTonight and help shape the first version.</p>
+      <form class="cta-row">
+        <input type="email" placeholder="Enter your email" aria-label="Email address" required />
+        <button type="submit">Get early access</button>
+      </form>
+      <p class="support">Built for people who want a great movie pick fast, not another endless catalog.</p>
+      <p class="micro">No clutter, no giant watchlist, just a better answer to what should I watch tonight?</p>
+    </section>
+  </main>
+</body>
+</html>
