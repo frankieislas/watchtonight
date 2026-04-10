@@ -132,9 +132,7 @@
       <div class="eyebrow">Early Access</div>
       <h1>Stop scrolling. Get 3 great movies to watch tonight.</h1>
       <p class="sub">WatchTonight gives you personalized movie picks based on the streaming services you already use, your taste, and what people are talking about right now.</p>
-      <form class="cta-row" action="https://formspree.io/f/xnjokkbb" method="POST" data-formspree-redirect="https://frankieislas.github.io/watchtonight/thanks.html">
-        <input type="hidden" name="_next" value="https://frankieislas.github.io/watchtonight/thanks.html" />
-        <input type="hidden" name="_subject" value="WatchTonight early access signup" />
+      <form class="cta-row js-wt-form" action="https://formspree.io/f/xnjokkbb" method="POST" data-success-url="https://frankieislas.github.io/watchtonight/thanks.html">
         <input type="email" name="email" placeholder="Enter your email" aria-label="Email address" required />
         <button type="submit">Join the early access list</button>
       </form>
@@ -193,9 +191,7 @@
     <section class="footer-cta">
       <h2>Join early access</h2>
       <p>Be one of the first to try WatchTonight and help shape the first version.</p>
-      <form class="cta-row" action="https://formspree.io/f/xnjokkbb" method="POST" data-formspree-redirect="https://frankieislas.github.io/watchtonight/thanks.html">
-        <input type="hidden" name="_next" value="https://frankieislas.github.io/watchtonight/thanks.html" />
-        <input type="hidden" name="_subject" value="WatchTonight early access signup" />
+      <form class="cta-row js-wt-form" action="https://formspree.io/f/xnjokkbb" method="POST" data-success-url="https://frankieislas.github.io/watchtonight/thanks.html">
         <input type="email" name="email" placeholder="Enter your email" aria-label="Email address" required />
         <button type="submit">Get early access</button>
       </form>
@@ -203,5 +199,46 @@
       <p class="micro">No clutter, no giant watchlist, just a better answer to what should I watch tonight?</p>
     </section>
   </main>
+  <script>
+    document.querySelectorAll('.js-wt-form').forEach((form) => {
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const button = form.querySelector('button');
+        const emailInput = form.querySelector('input[name="email"]');
+        if (!emailInput || !emailInput.value) return;
+        const originalText = button ? button.textContent : '';
+        if (button) {
+          button.disabled = true;
+          button.textContent = 'Submitting...';
+        }
+        try {
+          const response = await fetch(form.action, {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+              email: emailInput.value,
+              _subject: 'WatchTonight early access signup'
+            })
+          });
+          const data = await response.json();
+          if (response.ok && data.ok) {
+            window.location.href = form.dataset.successUrl;
+            return;
+          }
+          throw new Error('Submission failed');
+        } catch (error) {
+          alert('Something went wrong. Please try again.');
+        } finally {
+          if (button) {
+            button.disabled = false;
+            button.textContent = originalText;
+          }
+        }
+      });
+    });
+  </script>
 </body>
 </html>
