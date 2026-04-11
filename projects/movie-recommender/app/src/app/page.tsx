@@ -22,13 +22,13 @@ export default function Home() {
                 href="/recommend"
                 className="rounded-full bg-indigo-500 px-6 py-3 font-semibold text-white transition hover:bg-indigo-400"
               >
-                Try the MVP
+                Start recommendations
               </Link>
               <Link
-                href="/feedback"
+                href="/results?services=Max%2CNetflix&genres=Sci-fi%2CThriller&mood=Thoughtful"
                 className="rounded-full border border-white/15 px-6 py-3 font-semibold text-slate-200 transition hover:bg-white/5"
               >
-                Leave feedback
+                Preview example results
               </Link>
             </div>
           </div>
