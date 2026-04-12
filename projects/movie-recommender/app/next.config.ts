@@ -2,6 +2,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: "export",
+  basePath: "/watchtonight",
+  assetPrefix: "/watchtonight/",
+  trailingSlash: true,
   images: {
     unoptimized: true,
   },
