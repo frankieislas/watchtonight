@@ -1,80 +1,12 @@
-import Link from "next/link";
-import { ResultsView } from "./ResultsView";
-import { RecommendationInput } from "@/app/lib/recommendation-data";
-
-export const dynamic = "force-static";
-
-function parseList(value?: string) {
-  if (!value) return [];
-  return value
-    .split(",")
-    .map((item) => item.trim())
-    .filter(Boolean);
-}
+import { Suspense } from "react";
+import { ResultsClientPage } from "./ResultsClientPage";
 
 export default function ResultsPage() {
-  const input: RecommendationInput = {
-    services: ["Netflix", "Max"],
-    genres: ["Sci-fi", "Thriller"],
-    mood: "Thoughtful",
-    avoid: "",
-  };
-
   return (
     <main className="px-6 py-12 text-white">
-      <div className="mx-auto max-w-5xl space-y-8">
-        <div className="space-y-3">
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-300">
-            Recommendation Output
-          </p>
-          <h1 className="text-4xl font-semibold tracking-tight">
-            Tonight&apos;s top 3 picks.
-          </h1>
-          <p className="max-w-2xl text-base leading-7 text-slate-300">
-            This is the current static-review version of the results page for
-            the deployed MVP. It shows the recommendation experience cleanly in
-            GitHub Pages without relying on runtime query hydration.
-          </p>
-        </div>
-
-        <section className="rounded-3xl border border-white/10 bg-white/5 p-6 text-sm text-slate-300">
-          <div className="flex flex-wrap gap-3">
-            <span className="rounded-full bg-white/5 px-3 py-1">
-              Services: {input.services.join(", ")}
-            </span>
-            <span className="rounded-full bg-white/5 px-3 py-1">
-              Genres: {input.genres.join(", ")}
-            </span>
-            <span className="rounded-full bg-white/5 px-3 py-1">
-              Mood: {input.mood}
-            </span>
-          </div>
-        </section>
-
-        <ResultsView input={input} />
-
-        <section className="rounded-3xl border border-indigo-400/20 bg-indigo-500/10 p-6 text-sm text-indigo-100">
-          <p className="font-semibold">What to do next</p>
-          <p className="mt-2 text-indigo-100/85">
-            If one of these feels right, go watch it. If not, head back to the
-            recommendation page or leave feedback for the next product pass.
-          </p>
-          <div className="mt-4 flex flex-wrap gap-4">
-            <Link
-              href="/recommend"
-              className="rounded-full border border-white/10 px-6 py-3 font-semibold text-slate-200 transition hover:bg-white/5"
-            >
-              Back to recommend
-            </Link>
-            <Link
-              href="/feedback"
-              className="rounded-full bg-indigo-500 px-6 py-3 font-semibold text-white transition hover:bg-indigo-400"
-            >
-              Leave feedback
-            </Link>
-          </div>
-        </section>
-      </div>
+      <Suspense fallback={<div className="mx-auto max-w-5xl text-sm text-slate-400">Loading results...</div>}>
+        <ResultsClientPage />
+      </Suspense>
     </main>
   );
 }
