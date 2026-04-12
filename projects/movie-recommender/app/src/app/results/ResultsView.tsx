@@ -1,5 +1,23 @@
 import { getRecommendations, RecommendationInput } from "@/app/lib/recommendation-data";
 
+function getDecisionAngle(index: number) {
+  if (index === 0) return "Best overall pick";
+  if (index === 1) return "Safer backup option";
+  return "Wildcard option";
+}
+
+function getDecisionSummary(index: number, runtime: number, intensity: string) {
+  if (index === 0) {
+    return "If you want the easiest strong choice, start here.";
+  }
+
+  if (index === 1) {
+    return `A more flexible backup if the top pick feels slightly off. Runtime is ${runtime} minutes and the intensity stays ${intensity}.`;
+  }
+
+  return "This is the more adventurous option if you want something with a different flavor tonight.";
+}
+
 export function ResultsView({ input }: { input: RecommendationInput }) {
   const picks = getRecommendations(input);
 
@@ -13,7 +31,7 @@ export function ResultsView({ input }: { input: RecommendationInput }) {
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-300">
-                Pick {index + 1}
+                {getDecisionAngle(index)}
               </p>
               <h2 className="mt-2 text-2xl font-semibold">
                 {pick.title} <span className="text-slate-400">({pick.year})</span>
@@ -27,10 +45,15 @@ export function ResultsView({ input }: { input: RecommendationInput }) {
             ) : null}
           </div>
 
+          <div className="mt-4 rounded-2xl border border-emerald-300/20 bg-emerald-300/10 p-4 text-sm text-emerald-100">
+            <p className="font-semibold">Decision summary</p>
+            <p className="mt-2 text-emerald-100/85">{getDecisionSummary(index, pick.runtime, pick.intensity)}</p>
+          </div>
+
           <div className="mt-5 grid gap-4 md:grid-cols-3">
             <div className="rounded-2xl border border-white/10 bg-slate-950/50 p-4 md:col-span-2">
               <h3 className="text-sm font-semibold uppercase tracking-[0.15em] text-slate-300">
-                Why it fits
+                Why it fits tonight
               </h3>
               <p className="mt-2 text-sm leading-6 text-slate-300">{pick.whyTonight}</p>
               <ul className="mt-4 space-y-2 text-sm text-slate-400">
