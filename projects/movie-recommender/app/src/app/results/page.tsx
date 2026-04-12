@@ -25,7 +25,7 @@ export default async function ResultsPage({
   };
 
   return (
-    <main className="min-h-screen bg-slate-950 px-6 py-12 text-white">
+    <main className="px-6 py-12 text-white">
       <div className="mx-auto max-w-5xl space-y-8">
         <div className="space-y-3">
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-300">
@@ -59,20 +59,27 @@ export default async function ResultsPage({
 
         <ResultsView input={input} />
 
-        <div className="flex flex-wrap gap-4">
-          <Link
-            href="/recommend"
-            className="rounded-full border border-white/10 px-6 py-3 font-semibold text-slate-200 transition hover:bg-white/5"
-          >
-            Adjust my inputs
-          </Link>
-          <Link
-            href="/feedback"
-            className="rounded-full bg-indigo-500 px-6 py-3 font-semibold text-white transition hover:bg-indigo-400"
-          >
-            Leave feedback
-          </Link>
-        </div>
+        <section className="rounded-3xl border border-indigo-400/20 bg-indigo-500/10 p-6 text-sm text-indigo-100">
+          <p className="font-semibold">What to do next</p>
+          <p className="mt-2 text-indigo-100/85">
+            If one of these feels right, go watch it. If not, adjust your inputs
+            or leave feedback so the next round gets sharper.
+          </p>
+          <div className="mt-4 flex flex-wrap gap-4">
+            <Link
+              href="/recommend"
+              className="rounded-full border border-white/10 px-6 py-3 font-semibold text-slate-200 transition hover:bg-white/5"
+            >
+              Adjust my inputs
+            </Link>
+            <Link
+              href="/feedback"
+              className="rounded-full bg-indigo-500 px-6 py-3 font-semibold text-white transition hover:bg-indigo-400"
+            >
+              Leave feedback
+            </Link>
+          </div>
+        </section>
       </div>
     </main>
   );
