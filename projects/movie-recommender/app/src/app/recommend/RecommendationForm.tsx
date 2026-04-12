@@ -8,13 +8,37 @@ import {
   streamingServices,
   tasteGenres,
 } from "@/app/lib/recommendation-data";
+import {
+  defaultTasteMemory,
+  TasteMemory,
+  tasteMemoryStorageKey,
+} from "@/app/lib/taste-memory";
+
+function loadInitialMemory(): TasteMemory {
+  if (typeof window === "undefined") {
+    return defaultTasteMemory;
+  }
+
+  const stored = window.localStorage.getItem(tasteMemoryStorageKey);
+  if (!stored) {
+    return defaultTasteMemory;
+  }
+
+  try {
+    return JSON.parse(stored) as TasteMemory;
+  } catch {
+    return defaultTasteMemory;
+  }
+}
 
 export function RecommendationForm() {
   const router = useRouter();
-  const [selectedServices, setSelectedServices] = useState<string[]>(["Netflix", "Max"]);
-  const [selectedGenres, setSelectedGenres] = useState<string[]>(["Sci-fi", "Thriller"]);
-  const [selectedMood, setSelectedMood] = useState<string>("Thoughtful");
-  const [avoid, setAvoid] = useState("");
+  const [memorySaved, setMemorySaved] = useState(false);
+  const [memory, setMemory] = useState<TasteMemory>(() => loadInitialMemory());
+  const [selectedServices, setSelectedServices] = useState<string[]>(() => memory.defaultServices);
+  const [selectedGenres, setSelectedGenres] = useState<string[]>(() => memory.favoriteGenres);
+  const [selectedMood, setSelectedMood] = useState<string>(() => memory.preferredMood);
+  const [avoid, setAvoid] = useState(() => memory.avoidPhrases.join(", "));
 
   const canSubmit = useMemo(
     () => selectedServices.length > 0 || selectedGenres.length > 0 || Boolean(selectedMood),
@@ -33,6 +57,25 @@ export function RecommendationForm() {
     );
   };
 
+  const saveProfile = () => {
+    const nextMemory: TasteMemory = {
+      favoriteGenres: selectedGenres,
+      dislikedGenres: [],
+      defaultServices: selectedServices,
+      preferredMood: selectedMood,
+      avoidPhrases: avoid
+        .split(",")
+        .map((item) => item.trim())
+        .filter(Boolean),
+      lastUpdatedLabel: "Saved from recommendation setup",
+    };
+
+    window.localStorage.setItem(tasteMemoryStorageKey, JSON.stringify(nextMemory));
+    setMemory(nextMemory);
+    setMemorySaved(true);
+    window.setTimeout(() => setMemorySaved(false), 2000);
+  };
+
   const onSubmit = () => {
     const query = buildRecommendationQuery({
       services: selectedServices,
@@ -46,6 +89,20 @@ export function RecommendationForm() {
 
   return (
     <div className="space-y-10">
+      <section className="rounded-3xl border border-emerald-300/20 bg-emerald-300/10 p-5 text-sm text-emerald-100">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <p className="font-semibold">Taste memory active</p>
+            <p className="mt-1 text-emerald-100/80">
+              WatchTonight is preloading your saved services, genres, mood, and avoid notes.
+            </p>
+          </div>
+          <div className="rounded-full bg-black/20 px-3 py-1 text-xs uppercase tracking-[0.15em]">
+            {memory.lastUpdatedLabel}
+          </div>
+        </div>
+      </section>
+
       <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
         <section className="rounded-3xl border border-white/10 bg-white/5 p-6">
           <h2 className="mb-4 text-xl font-semibold">1. Streaming services</h2>
@@ -143,6 +200,16 @@ export function RecommendationForm() {
           >
             See my top 3 picks
           </button>
+          <button
+            type="button"
+            onClick={saveProfile}
+            className="rounded-full border border-white/10 px-6 py-3 font-semibold text-slate-200 transition hover:bg-white/5"
+          >
+            Save my taste profile
+          </button>
+          {memorySaved ? (
+            <div className="self-center text-sm text-emerald-300">Taste profile saved locally.</div>
+          ) : null}
         </div>
       </section>
     </div>

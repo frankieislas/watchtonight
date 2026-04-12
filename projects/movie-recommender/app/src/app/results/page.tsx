@@ -35,8 +35,8 @@ export default async function ResultsPage({
             Tonight&apos;s top 3 picks.
           </h1>
           <p className="max-w-2xl text-base leading-7 text-slate-300">
-            This is now wired to the recommendation input flow, using a simple
-            first-pass scoring model to produce results from your selections.
+            This output now uses your current setup plus saved taste defaults if
+            you reuse them from the recommendation flow.
           </p>
         </div>
 
