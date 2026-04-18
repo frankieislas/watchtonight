@@ -99,7 +99,7 @@ function inferBestFor(genres: string[], moods: string[]) {
   return [...new Set(bestFor)] as MoviePick["bestFor"];
 }
 
-function looksLowQuality(title: string, overview: string) {
+function looksLowQuality(title: string, overview: string, year?: number) {
   const lowerTitle = title.toLowerCase();
   const lowerOverview = overview.toLowerCase();
 
@@ -107,6 +107,9 @@ function looksLowQuality(title: string, overview: string) {
   if (/[\u0400-\u04FF\u0600-\u06FF\u0900-\u097F]/.test(title) && !/[a-zA-Z]/.test(title)) return true;
   if (lowerTitle.includes("season ") || lowerTitle.includes("episode ")) return true;
   if (lowerOverview.includes("reality") || lowerOverview.includes("documentary series")) return true;
+  if (!overview || overview.trim().length < 40) return true;
+  if (year && year > new Date().getFullYear() + 1) return true;
+  if (/^[a-z0-9\s]+$/i.test(title) === false && title.length < 5) return true;
   return false;
 }
 
@@ -137,6 +140,19 @@ function normalizeCandidate(candidate: ProviderMovieCandidate, fallbackService?:
     conversationStarter: genres.includes("Drama") || genres.includes("Sci-fi") || genres.includes("Crime"),
     goodFor: ["live inventory expansion", "broader streaming pool"],
   };
+}
+
+function scoreLiveCandidateQuality(candidate: ProviderMovieCandidate) {
+  let score = 0;
+  const overview = candidate.overview?.trim() || "";
+
+  if (candidate.title.length >= 4) score += 2;
+  if (overview.length >= 80) score += 3;
+  if (candidate.runtime && candidate.runtime >= 80 && candidate.runtime <= 180) score += 2;
+  if (candidate.year && candidate.year >= 1980 && candidate.year <= new Date().getFullYear() + 1) score += 1;
+  if (candidate.genres && candidate.genres.length > 0) score += 2;
+
+  return score;
 }
 
 async function fetchStreamingAvailabilityCandidates(query: LivePoolQuery): Promise<ProviderMovieCandidate[]> {
@@ -192,7 +208,8 @@ async function fetchStreamingAvailabilityCandidates(query: LivePoolQuery): Promi
           ? title.overview
           : undefined,
     }))
-    .filter((candidate: ProviderMovieCandidate) => !looksLowQuality(candidate.title, candidate.overview || ""));
+    .filter((candidate: ProviderMovieCandidate) => !looksLowQuality(candidate.title, candidate.overview || "", candidate.year))
+    .filter((candidate: ProviderMovieCandidate) => scoreLiveCandidateQuality(candidate) >= 6);
 }
 
 function curatedAnchorsForServices(services: string[]) {
@@ -205,10 +222,10 @@ export async function getLivePool(query: LivePoolQuery): Promise<LivePoolResult>
   const normalizedLive = candidates.map((candidate) => normalizeCandidate(candidate, query.services[0]));
   const anchors = curatedAnchorsForServices(query.services);
 
-  const merged = [...normalizedLive];
-  for (const anchor of anchors) {
-    if (!merged.some((movie) => movie.title.toLowerCase() === anchor.title.toLowerCase())) {
-      merged.push(anchor);
+  const merged = [...anchors];
+  for (const liveMovie of normalizedLive) {
+    if (!merged.some((movie) => movie.title.toLowerCase() === liveMovie.title.toLowerCase())) {
+      merged.push(liveMovie);
     }
   }
 
