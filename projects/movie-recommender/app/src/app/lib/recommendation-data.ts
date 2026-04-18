@@ -739,14 +739,17 @@ function pickDiverseTopThree(ranked: RankedRecommendation[]) {
   return selected;
 }
 
-export function getRecommendations(input: RecommendationInput): RankedRecommendation[] {
+export function getRecommendations(
+  input: RecommendationInput,
+  catalog: MoviePick[] = movieCatalog,
+): RankedRecommendation[] {
   const avoidText = normalizeAvoidText(input.avoid);
   const hasServiceFilter = input.services.length > 0;
   const hasGenreFilter = input.genres.length > 0;
   const hasMoodFilter = Boolean(input.mood);
   const runtimeLimit = runtimeLimitFromInput(input.maxRuntime);
 
-  const ranked = movieCatalog
+  const ranked = catalog
     .filter((movie) => {
       if (hasServiceFilter && !input.services.includes(movie.service)) {
         return false;
@@ -803,7 +806,7 @@ export function getRecommendations(input: RecommendationInput): RankedRecommenda
     return topPicks;
   }
 
-  const fallback = movieCatalog
+  const fallback = catalog
     .filter((movie) => !topPicks.some((pick) => pick.title === movie.title))
     .map((movie) => ({
       ...movie,
