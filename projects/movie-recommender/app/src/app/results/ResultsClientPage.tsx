@@ -21,6 +21,9 @@ export function ResultsClientPage() {
     genres: parseList(searchParams.get("genres")),
     mood: searchParams.get("mood") || "Thoughtful",
     avoid: searchParams.get("avoid") || "",
+    energy: (searchParams.get("energy") as RecommendationInput["energy"]) || "",
+    company: (searchParams.get("company") as RecommendationInput["company"]) || "",
+    maxRuntime: searchParams.get("maxRuntime") || "120",
   };
 
   return (
@@ -48,6 +51,15 @@ export function ResultsClientPage() {
           </span>
           <span className="rounded-full bg-white/5 px-3 py-1">
             Mood: {input.mood || "Thoughtful"}
+          </span>
+          <span className="rounded-full bg-white/5 px-3 py-1">
+            Energy: {input.energy || "Any"}
+          </span>
+          <span className="rounded-full bg-white/5 px-3 py-1">
+            Company: {input.company || "Any"}
+          </span>
+          <span className="rounded-full bg-white/5 px-3 py-1">
+            Max runtime: {input.maxRuntime === "Any" ? "Any" : `${input.maxRuntime} min`}
           </span>
         </div>
         {input.avoid ? (

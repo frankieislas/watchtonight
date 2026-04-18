@@ -6,16 +6,16 @@ function getDecisionAngle(index: number) {
   return "Wildcard option";
 }
 
-function getDecisionSummary(index: number, runtime: number, intensity: string) {
+function getDecisionSummary(index: number, runtime: number, intensity: string, vibe: string) {
   if (index === 0) {
-    return "If you want the easiest strong choice, start here.";
+    return `This is the strongest overall fit tonight, with a ${vibe.toLowerCase()} profile and a ${runtime}-minute runtime.`;
   }
 
   if (index === 1) {
     return `A more flexible backup if the top pick feels slightly off. Runtime is ${runtime} minutes and the intensity stays ${intensity}.`;
   }
 
-  return "This is the more adventurous option if you want something with a different flavor tonight.";
+  return "This is the wildcard, picked to give you a meaningfully different flavor instead of a near-duplicate.";
 }
 
 export function ResultsView({ input }: { input: RecommendationInput }) {
@@ -47,7 +47,7 @@ export function ResultsView({ input }: { input: RecommendationInput }) {
 
           <div className="mt-4 rounded-2xl border border-emerald-300/20 bg-emerald-300/10 p-4 text-sm text-emerald-100">
             <p className="font-semibold">Decision summary</p>
-            <p className="mt-2 text-emerald-100/85">{getDecisionSummary(index, pick.runtime, pick.intensity)}</p>
+            <p className="mt-2 text-emerald-100/85">{getDecisionSummary(index, pick.runtime, pick.intensity, pick.vibe)}</p>
           </div>
 
           <div className="mt-5 grid gap-4 md:grid-cols-3">
@@ -61,6 +61,14 @@ export function ResultsView({ input }: { input: RecommendationInput }) {
                   <li key={reason}>• {reason}</li>
                 ))}
               </ul>
+              <div className="mt-4 rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-slate-300">
+                <p className="font-semibold text-white">Best when...</p>
+                <ul className="mt-2 space-y-2 text-slate-400">
+                  {pick.goodFor.map((scenario) => (
+                    <li key={scenario}>• {scenario}</li>
+                  ))}
+                </ul>
+              </div>
               {pick.caution ? (
                 <p className="mt-4 rounded-2xl border border-amber-400/30 bg-amber-400/10 px-4 py-3 text-sm text-amber-200">
                   {pick.caution}
@@ -80,6 +88,15 @@ export function ResultsView({ input }: { input: RecommendationInput }) {
                 </p>
                 <p>
                   <span className="font-semibold text-white">Intensity:</span> {pick.intensity}
+                </p>
+                <p>
+                  <span className="font-semibold text-white">Tone:</span> {pick.tone}
+                </p>
+                <p>
+                  <span className="font-semibold text-white">Complexity:</span> {pick.complexity}
+                </p>
+                <p>
+                  <span className="font-semibold text-white">Best for:</span> {pick.bestFor.join(", ")}
                 </p>
                 <p>
                   <span className="font-semibold text-white">Match score:</span> {pick.score}

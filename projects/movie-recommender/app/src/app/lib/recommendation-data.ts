@@ -28,6 +28,16 @@ export const moodOptions = [
   "Tense",
 ] as const;
 
+export const energyOptions = ["Low", "Medium", "High"] as const;
+export const companyOptions = ["Solo", "Date night", "Group"] as const;
+export const maxRuntimeOptions = ["90", "120", "150", "Any"] as const;
+
+export type EnergyLevel = "Low" | "Medium" | "High";
+export type CompanyType = "Solo" | "Date night" | "Group";
+export type MovieIntensity = "low" | "medium" | "high";
+export type Tone = "light" | "balanced" | "dark";
+export type Complexity = "easy" | "moderate" | "demanding";
+
 export type MoviePick = {
   title: string;
   year: number;
@@ -36,11 +46,18 @@ export type MoviePick = {
   vibe: string;
   whyTonight: string;
   fallbackReason: string;
-  intensity: "low" | "medium" | "high";
+  intensity: MovieIntensity;
   runtime: number;
   genres: string[];
   moods: string[];
   avoidTags: string[];
+  energy: EnergyLevel;
+  tone: Tone;
+  complexity: Complexity;
+  bestFor: CompanyType[];
+  rewatchable: boolean;
+  conversationStarter: boolean;
+  goodFor: string[];
 };
 
 export type RecommendationInput = {
@@ -48,6 +65,9 @@ export type RecommendationInput = {
   genres: string[];
   mood: string;
   avoid: string;
+  energy: EnergyLevel | "";
+  company: CompanyType | "";
+  maxRuntime: string;
 };
 
 export type RankedRecommendation = MoviePick & {
@@ -70,6 +90,13 @@ export const movieCatalog: MoviePick[] = [
     genres: ["Sci-fi", "Thriller"],
     moods: ["Thoughtful", "Tense", "Dark"],
     avoidTags: ["too slow"],
+    energy: "Medium",
+    tone: "dark",
+    complexity: "moderate",
+    bestFor: ["Solo", "Date night"],
+    rewatchable: true,
+    conversationStarter: true,
+    goodFor: ["smart sci-fi night", "tense but controlled watch"],
   },
   {
     title: "Arrival",
@@ -84,6 +111,13 @@ export const movieCatalog: MoviePick[] = [
     genres: ["Sci-fi", "Drama"],
     moods: ["Thoughtful", "Dark"],
     avoidTags: ["too slow"],
+    energy: "Low",
+    tone: "balanced",
+    complexity: "demanding",
+    bestFor: ["Solo", "Date night"],
+    rewatchable: true,
+    conversationStarter: true,
+    goodFor: ["emotional sci-fi", "quieter thoughtful night"],
   },
   {
     title: "Palm Springs",
@@ -98,6 +132,13 @@ export const movieCatalog: MoviePick[] = [
     genres: ["Comedy", "Romance"],
     moods: ["Easy watch", "Fun"],
     avoidTags: ["too silly"],
+    energy: "Low",
+    tone: "light",
+    complexity: "easy",
+    bestFor: ["Solo", "Date night", "Group"],
+    rewatchable: true,
+    conversationStarter: false,
+    goodFor: ["date night", "easy win", "low-friction watch"],
   },
   {
     title: "Game Night",
@@ -112,6 +153,13 @@ export const movieCatalog: MoviePick[] = [
     genres: ["Comedy", "Crime"],
     moods: ["Fun", "Easy watch"],
     avoidTags: ["too silly"],
+    energy: "Medium",
+    tone: "light",
+    complexity: "easy",
+    bestFor: ["Date night", "Group"],
+    rewatchable: true,
+    conversationStarter: false,
+    goodFor: ["group hang", "something fun and fast"],
   },
   {
     title: "Michael Clayton",
@@ -126,6 +174,13 @@ export const movieCatalog: MoviePick[] = [
     genres: ["Drama", "Crime"],
     moods: ["Thoughtful", "Tense"],
     avoidTags: ["too depressing", "too slow"],
+    energy: "Medium",
+    tone: "balanced",
+    complexity: "moderate",
+    bestFor: ["Solo", "Date night"],
+    rewatchable: true,
+    conversationStarter: true,
+    goodFor: ["smart adult drama", "serious but not draining"],
   },
   {
     title: "Before Sunrise",
@@ -140,6 +195,13 @@ export const movieCatalog: MoviePick[] = [
     genres: ["Romance", "Drama"],
     moods: ["Thoughtful", "Easy watch"],
     avoidTags: ["too talky", "too slow"],
+    energy: "Low",
+    tone: "light",
+    complexity: "moderate",
+    bestFor: ["Solo", "Date night"],
+    rewatchable: true,
+    conversationStarter: true,
+    goodFor: ["date night", "quiet emotional watch"],
   },
   {
     title: "Mad Max: Fury Road",
@@ -154,6 +216,13 @@ export const movieCatalog: MoviePick[] = [
     genres: ["Action", "Sci-fi"],
     moods: ["Fun", "Tense"],
     avoidTags: ["too intense"],
+    energy: "High",
+    tone: "balanced",
+    complexity: "easy",
+    bestFor: ["Solo", "Group"],
+    rewatchable: true,
+    conversationStarter: false,
+    goodFor: ["adrenaline night", "attention reset"],
   },
   {
     title: "Mission: Impossible - Fallout",
@@ -168,6 +237,13 @@ export const movieCatalog: MoviePick[] = [
     genres: ["Action", "Thriller"],
     moods: ["Fun", "Tense"],
     avoidTags: ["too long", "too intense"],
+    energy: "High",
+    tone: "balanced",
+    complexity: "easy",
+    bestFor: ["Solo", "Group"],
+    rewatchable: true,
+    conversationStarter: false,
+    goodFor: ["big action night", "group pick"],
   },
   {
     title: "Gone Girl",
@@ -182,6 +258,13 @@ export const movieCatalog: MoviePick[] = [
     genres: ["Thriller", "Drama"],
     moods: ["Dark", "Tense"],
     avoidTags: ["too dark", "too long", "too intense"],
+    energy: "Medium",
+    tone: "dark",
+    complexity: "moderate",
+    bestFor: ["Solo", "Date night"],
+    rewatchable: true,
+    conversationStarter: true,
+    goodFor: ["dark thriller night", "want something sharp and nasty"],
   },
   {
     title: "Barbarian",
@@ -196,6 +279,13 @@ export const movieCatalog: MoviePick[] = [
     genres: ["Horror", "Thriller"],
     moods: ["Dark", "Tense"],
     avoidTags: ["too intense", "too dark"],
+    energy: "High",
+    tone: "dark",
+    complexity: "easy",
+    bestFor: ["Solo", "Group"],
+    rewatchable: false,
+    conversationStarter: true,
+    goodFor: ["horror night", "want something wild"],
   },
   {
     title: "The Nice Guys",
@@ -210,6 +300,13 @@ export const movieCatalog: MoviePick[] = [
     genres: ["Comedy", "Crime", "Action"],
     moods: ["Fun", "Easy watch"],
     avoidTags: ["too silly"],
+    energy: "Medium",
+    tone: "light",
+    complexity: "easy",
+    bestFor: ["Solo", "Date night", "Group"],
+    rewatchable: true,
+    conversationStarter: false,
+    goodFor: ["easy fun watch", "crime-comedy night"],
   },
   {
     title: "Prisoners",
@@ -224,6 +321,13 @@ export const movieCatalog: MoviePick[] = [
     genres: ["Thriller", "Crime", "Drama"],
     moods: ["Dark", "Tense", "Thoughtful"],
     avoidTags: ["too dark", "too intense", "too long"],
+    energy: "High",
+    tone: "dark",
+    complexity: "moderate",
+    bestFor: ["Solo"],
+    rewatchable: true,
+    conversationStarter: true,
+    goodFor: ["heavy thriller night", "want something absorbing"],
   },
   {
     title: "Knives Out",
@@ -238,6 +342,13 @@ export const movieCatalog: MoviePick[] = [
     genres: ["Crime", "Comedy", "Drama"],
     moods: ["Fun", "Easy watch", "Thoughtful"],
     avoidTags: ["too silly"],
+    energy: "Medium",
+    tone: "light",
+    complexity: "moderate",
+    bestFor: ["Date night", "Group"],
+    rewatchable: true,
+    conversationStarter: true,
+    goodFor: ["group movie", "light mystery"],
   },
   {
     title: "The Babadook",
@@ -252,6 +363,13 @@ export const movieCatalog: MoviePick[] = [
     genres: ["Horror", "Drama"],
     moods: ["Dark", "Thoughtful", "Tense"],
     avoidTags: ["too dark", "too intense"],
+    energy: "Medium",
+    tone: "dark",
+    complexity: "moderate",
+    bestFor: ["Solo"],
+    rewatchable: false,
+    conversationStarter: true,
+    goodFor: ["serious horror night", "dark thoughtful mood"],
   },
   {
     title: "Top Gun: Maverick",
@@ -266,6 +384,13 @@ export const movieCatalog: MoviePick[] = [
     genres: ["Action", "Drama"],
     moods: ["Fun", "Easy watch"],
     avoidTags: ["too loud"],
+    energy: "Medium",
+    tone: "light",
+    complexity: "easy",
+    bestFor: ["Solo", "Date night", "Group"],
+    rewatchable: true,
+    conversationStarter: false,
+    goodFor: ["crowd-pleaser", "easy blockbuster win"],
   },
   {
     title: "Past Lives",
@@ -280,6 +405,13 @@ export const movieCatalog: MoviePick[] = [
     genres: ["Romance", "Drama"],
     moods: ["Thoughtful", "Easy watch"],
     avoidTags: ["too slow"],
+    energy: "Low",
+    tone: "balanced",
+    complexity: "moderate",
+    bestFor: ["Solo", "Date night"],
+    rewatchable: true,
+    conversationStarter: true,
+    goodFor: ["date night", "quiet emotional watch"],
   },
   {
     title: "Prey",
@@ -294,6 +426,55 @@ export const movieCatalog: MoviePick[] = [
     genres: ["Action", "Thriller", "Sci-fi"],
     moods: ["Tense", "Fun"],
     avoidTags: ["too intense"],
+    energy: "High",
+    tone: "balanced",
+    complexity: "easy",
+    bestFor: ["Solo", "Group"],
+    rewatchable: true,
+    conversationStarter: false,
+    goodFor: ["lean action night", "fast tense watch"],
+  },
+  {
+    title: "Paddington 2",
+    year: 2017,
+    service: "Netflix",
+    fit: "A genuinely delightful comfort pick when you want something warm and light.",
+    vibe: "Sweet, funny, charming",
+    whyTonight: "Best when the goal is to feel better, not be challenged.",
+    fallbackReason: "A wholesome fallback when you want the opposite of dark or draining.",
+    intensity: "low",
+    runtime: 103,
+    genres: ["Comedy"],
+    moods: ["Easy watch", "Fun"],
+    avoidTags: ["too silly"],
+    energy: "Low",
+    tone: "light",
+    complexity: "easy",
+    bestFor: ["Solo", "Date night", "Group"],
+    rewatchable: true,
+    conversationStarter: false,
+    goodFor: ["comfort movie", "reset night"],
+  },
+  {
+    title: "Zodiac",
+    year: 2007,
+    service: "Netflix",
+    fit: "A meticulous investigative thriller when you want something immersive and serious.",
+    vibe: "Obsessive, tense, procedural",
+    whyTonight: "Best when you want a long, absorbing thriller that rewards attention.",
+    fallbackReason: "A serious fallback for a more demanding crime-thriller mood.",
+    intensity: "medium",
+    runtime: 157,
+    genres: ["Thriller", "Crime", "Drama"],
+    moods: ["Thoughtful", "Tense", "Dark"],
+    avoidTags: ["too long", "too slow"],
+    energy: "Medium",
+    tone: "dark",
+    complexity: "demanding",
+    bestFor: ["Solo"],
+    rewatchable: true,
+    conversationStarter: true,
+    goodFor: ["investigative thriller", "want something deep and absorbing"],
   }
 ];
 
@@ -304,6 +485,9 @@ export function buildRecommendationQuery(input: RecommendationInput) {
   if (input.genres.length) params.set("genres", input.genres.join(","));
   if (input.mood) params.set("mood", input.mood);
   if (input.avoid.trim()) params.set("avoid", input.avoid.trim());
+  if (input.energy) params.set("energy", input.energy);
+  if (input.company) params.set("company", input.company);
+  if (input.maxRuntime) params.set("maxRuntime", input.maxRuntime);
 
   return params.toString();
 }
@@ -327,6 +511,14 @@ function buildReasons(movie: MoviePick, input: RecommendationInput, matchedGenre
     reasons.push(`fits a ${input.mood.toLowerCase()} night`);
   }
 
+  if (input.energy && movie.energy === input.energy) {
+    reasons.push(`matches your ${input.energy.toLowerCase()}-energy mood`);
+  }
+
+  if (input.company && movie.bestFor.includes(input.company)) {
+    reasons.push(`works well for ${input.company.toLowerCase()}`);
+  }
+
   if (!reasons.length) {
     reasons.push(movie.fallbackReason);
   }
@@ -334,15 +526,59 @@ function buildReasons(movie: MoviePick, input: RecommendationInput, matchedGenre
   return reasons;
 }
 
+function runtimeLimitFromInput(maxRuntime: string) {
+  if (!maxRuntime || maxRuntime === "Any") return Number.POSITIVE_INFINITY;
+  return Number(maxRuntime);
+}
+
+function pickDiverseTopThree(ranked: RankedRecommendation[]) {
+  const selected: RankedRecommendation[] = [];
+
+  for (const pick of ranked) {
+    const tooSimilar = selected.some(
+      (existing) =>
+        existing.service === pick.service &&
+        existing.moods.some((mood) => pick.moods.includes(mood)) &&
+        existing.genres.some((genre) => pick.genres.includes(genre)),
+    );
+
+    if (tooSimilar && selected.length < 2) {
+      continue;
+    }
+
+    selected.push(pick);
+
+    if (selected.length === 3) {
+      break;
+    }
+  }
+
+  if (selected.length < 3) {
+    for (const pick of ranked) {
+      if (!selected.some((existing) => existing.title === pick.title)) {
+        selected.push(pick);
+      }
+      if (selected.length === 3) break;
+    }
+  }
+
+  return selected;
+}
+
 export function getRecommendations(input: RecommendationInput): RankedRecommendation[] {
   const avoidText = normalizeAvoidText(input.avoid);
   const hasServiceFilter = input.services.length > 0;
   const hasGenreFilter = input.genres.length > 0;
   const hasMoodFilter = Boolean(input.mood);
+  const runtimeLimit = runtimeLimitFromInput(input.maxRuntime);
 
   const ranked = movieCatalog
     .filter((movie) => {
       if (hasServiceFilter && !input.services.includes(movie.service)) {
+        return false;
+      }
+
+      if (movie.runtime > runtimeLimit) {
         return false;
       }
 
@@ -354,35 +590,32 @@ export function getRecommendations(input: RecommendationInput): RankedRecommenda
       return true;
     })
     .map((movie) => {
-      let score = 0;
+      let score = 10;
       let caution: string | undefined;
 
       const matchedGenres = movie.genres.filter((genre) => input.genres.includes(genre));
       const moodMatch = hasMoodFilter && movie.moods.includes(input.mood);
       const reasons = buildReasons(movie, input, matchedGenres);
 
-      score += 4;
-      score += matchedGenres.length * 8;
+      score += matchedGenres.length * 10;
 
-      if (moodMatch) {
-        score += 7;
-      } else if (hasMoodFilter) {
-        score -= 4;
-      }
-
+      if (moodMatch) score += 9;
+      if (input.energy && movie.energy === input.energy) score += 7;
+      if (input.company && movie.bestFor.includes(input.company)) score += 6;
+      if (movie.conversationStarter && input.company === "Date night") score += 2;
+      if (movie.rewatchable && input.mood === "Easy watch") score += 2;
+      if (movie.intensity === "low" && input.mood === "Easy watch") score += 4;
+      if (movie.intensity === "high" && (input.mood === "Dark" || input.mood === "Tense")) score += 3;
       if (movie.runtime <= 110) score += 2;
-      if (movie.runtime >= 140) score -= 2;
-      if (movie.intensity === "low" && input.mood === "Easy watch") score += 3;
-      if (movie.intensity === "high" && (input.mood === "Dark" || input.mood === "Tense")) score += 2;
 
       const matchedAvoidTag = movie.avoidTags.find((tag) => avoidText.includes(tag));
       if (matchedAvoidTag) {
-        score -= 10;
+        score -= 12;
         caution = `Possible mismatch: you said you want to avoid “${matchedAvoidTag}”.`;
       }
 
       if (avoidText.includes("too long") && movie.runtime >= 140) {
-        score -= 6;
+        score -= 8;
         caution = `Possible mismatch: this one runs ${movie.runtime} minutes.`;
       }
 
@@ -390,12 +623,14 @@ export function getRecommendations(input: RecommendationInput): RankedRecommenda
     })
     .sort((a, b) => b.score - a.score || a.runtime - b.runtime);
 
-  if (ranked.length >= 3) {
-    return ranked.slice(0, 3);
+  const topPicks = pickDiverseTopThree(ranked);
+
+  if (topPicks.length >= 3) {
+    return topPicks;
   }
 
   const fallback = movieCatalog
-    .filter((movie) => !ranked.some((pick) => pick.title === movie.title))
+    .filter((movie) => !topPicks.some((pick) => pick.title === movie.title))
     .map((movie) => ({
       ...movie,
       score: -1,
@@ -406,5 +641,5 @@ export function getRecommendations(input: RecommendationInput): RankedRecommenda
     }))
     .sort((a, b) => a.runtime - b.runtime);
 
-  return [...ranked, ...fallback].slice(0, 3);
+  return [...topPicks, ...fallback].slice(0, 3);
 }

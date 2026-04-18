@@ -4,6 +4,9 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   buildRecommendationQuery,
+  companyOptions,
+  energyOptions,
+  maxRuntimeOptions,
   moodOptions,
   streamingServices,
   tasteGenres,
@@ -39,10 +42,18 @@ export function RecommendationForm() {
   const [selectedGenres, setSelectedGenres] = useState<string[]>(() => memory.favoriteGenres);
   const [selectedMood, setSelectedMood] = useState<string>(() => memory.preferredMood);
   const [avoid, setAvoid] = useState(() => memory.avoidPhrases.join(", "));
+  const [selectedEnergy, setSelectedEnergy] = useState<"" | "Low" | "Medium" | "High">("");
+  const [selectedCompany, setSelectedCompany] = useState<"" | "Solo" | "Date night" | "Group">("");
+  const [selectedMaxRuntime, setSelectedMaxRuntime] = useState("120");
 
   const canSubmit = useMemo(
-    () => selectedServices.length > 0 || selectedGenres.length > 0 || Boolean(selectedMood),
-    [selectedGenres.length, selectedMood, selectedServices.length],
+    () =>
+      selectedServices.length > 0 ||
+      selectedGenres.length > 0 ||
+      Boolean(selectedMood) ||
+      Boolean(selectedEnergy) ||
+      Boolean(selectedCompany),
+    [selectedCompany, selectedEnergy, selectedGenres.length, selectedMood, selectedServices.length],
   );
 
   const toggleValue = (
@@ -82,6 +93,9 @@ export function RecommendationForm() {
       genres: selectedGenres,
       mood: selectedMood,
       avoid,
+      energy: selectedEnergy,
+      company: selectedCompany,
+      maxRuntime: selectedMaxRuntime,
     });
 
     router.push(`/results?${query}`);
@@ -152,7 +166,79 @@ export function RecommendationForm() {
       </div>
 
       <section className="rounded-3xl border border-white/10 bg-white/5 p-6">
-        <h2 className="mb-4 text-xl font-semibold">3. Taste profile</h2>
+        <h2 className="mb-4 text-xl font-semibold">3. Night setup</h2>
+        <div className="grid gap-6 lg:grid-cols-3">
+          <div>
+            <p className="mb-3 text-sm font-medium text-slate-300">Energy level</p>
+            <div className="flex flex-wrap gap-3">
+              {energyOptions.map((energy) => {
+                const active = selectedEnergy === energy;
+                return (
+                  <button
+                    key={energy}
+                    type="button"
+                    onClick={() => setSelectedEnergy(energy)}
+                    className={`rounded-full border px-4 py-2 text-sm transition ${
+                      active
+                        ? "border-emerald-300 bg-emerald-300/15 text-white"
+                        : "border-white/10 text-slate-200 hover:bg-white/10"
+                    }`}
+                  >
+                    {energy}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+          <div>
+            <p className="mb-3 text-sm font-medium text-slate-300">Who is this for?</p>
+            <div className="flex flex-wrap gap-3">
+              {companyOptions.map((company) => {
+                const active = selectedCompany === company;
+                return (
+                  <button
+                    key={company}
+                    type="button"
+                    onClick={() => setSelectedCompany(company)}
+                    className={`rounded-full border px-4 py-2 text-sm transition ${
+                      active
+                        ? "border-indigo-400 bg-indigo-500/20 text-white"
+                        : "border-white/10 text-slate-200 hover:bg-white/10"
+                    }`}
+                  >
+                    {company}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+          <div>
+            <p className="mb-3 text-sm font-medium text-slate-300">Max runtime</p>
+            <div className="flex flex-wrap gap-3">
+              {maxRuntimeOptions.map((runtime) => {
+                const active = selectedMaxRuntime === runtime;
+                return (
+                  <button
+                    key={runtime}
+                    type="button"
+                    onClick={() => setSelectedMaxRuntime(runtime)}
+                    className={`rounded-full border px-4 py-2 text-sm transition ${
+                      active
+                        ? "border-indigo-400 bg-indigo-500/20 text-white"
+                        : "border-white/10 text-slate-200 hover:bg-white/10"
+                    }`}
+                  >
+                    {runtime === "Any" ? "Any length" : `${runtime} min max`}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="rounded-3xl border border-white/10 bg-white/5 p-6">
+        <h2 className="mb-4 text-xl font-semibold">4. Taste profile</h2>
         <div className="grid gap-6 lg:grid-cols-2">
           <div>
             <p className="mb-3 text-sm font-medium text-slate-300">
