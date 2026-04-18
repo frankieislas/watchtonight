@@ -186,14 +186,13 @@ function normalizeAvoidText(text: string) {
   return text.toLowerCase().trim();
 }
 
-function buildReasons(movie: MoviePick, input: RecommendationInput) {
+function buildReasons(movie: MoviePick, input: RecommendationInput, matchedGenres: string[]) {
   const reasons: string[] = [];
 
   if (input.services.includes(movie.service)) {
     reasons.push(`available on ${movie.service}`);
   }
 
-  const matchedGenres = movie.genres.filter((genre) => input.genres.includes(genre));
   if (matchedGenres.length) {
     reasons.push(`matches your ${matchedGenres.join(" + ")} taste`);
   }
@@ -211,34 +210,49 @@ function buildReasons(movie: MoviePick, input: RecommendationInput) {
 
 export function getRecommendations(input: RecommendationInput): RankedRecommendation[] {
   const avoidText = normalizeAvoidText(input.avoid);
+  const hasServiceFilter = input.services.length > 0;
+  const hasGenreFilter = input.genres.length > 0;
+  const hasMoodFilter = Boolean(input.mood);
 
   const ranked = movieCatalog
-    .filter((movie) => {
-      if (!input.services.length) return true;
-      return input.services.includes(movie.service);
-    })
     .map((movie) => {
       let score = 0;
-      const reasons = buildReasons(movie, input);
       let caution: string | undefined;
 
-      if (input.mood && movie.moods.includes(input.mood)) score += 4;
-
+      const serviceMatch = input.services.includes(movie.service);
       const matchedGenres = movie.genres.filter((genre) => input.genres.includes(genre));
-      score += matchedGenres.length * 3;
+      const moodMatch = hasMoodFilter && movie.moods.includes(input.mood);
+      const reasons = buildReasons(movie, input, matchedGenres);
 
-      if (input.services.includes(movie.service)) score += 2;
+      if (serviceMatch) {
+        score += 8;
+      } else if (hasServiceFilter) {
+        score -= 12;
+      }
+
+      if (matchedGenres.length) {
+        score += matchedGenres.length * 7;
+      } else if (hasGenreFilter) {
+        score -= 6;
+      }
+
+      if (moodMatch) {
+        score += 6;
+      } else if (hasMoodFilter) {
+        score -= 5;
+      }
 
       if (movie.runtime <= 110) score += 1;
+      if (movie.runtime >= 140) score -= 1;
 
       const matchedAvoidTag = movie.avoidTags.find((tag) => avoidText.includes(tag));
       if (matchedAvoidTag) {
-        score -= 5;
+        score -= 9;
         caution = `Possible mismatch: you said you want to avoid “${matchedAvoidTag}”.`;
       }
 
       if (avoidText.includes("too long") && movie.runtime >= 140) {
-        score -= 3;
+        score -= 6;
         caution = `Possible mismatch: this one runs ${movie.runtime} minutes.`;
       }
 
