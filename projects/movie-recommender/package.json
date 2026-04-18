@@ -5,6 +5,8 @@
     "build": "cd app && npm install && npm run build"
   },
   "devDependencies": {
-    "next": "16.2.3"
+    "@tailwindcss/postcss": "^4",
+    "next": "16.2.3",
+    "tailwindcss": "^4"
   }
 }
