@@ -91,16 +91,32 @@ async function fetchStreamingAvailabilityCandidates(query: LivePoolQuery): Promi
   }
 
   const data = await response.json();
-  const titles = Array.isArray(data.titles) ? data.titles : Array.isArray(data) ? data : [];
+  const titles = Array.isArray(data.titles)
+    ? data.titles
+    : Array.isArray(data)
+      ? data
+      : Array.isArray(data?.results)
+        ? data.results
+        : [];
 
-  return titles.map((title: any) => ({
-    title: title.title,
-    year: title.year,
-    service: query.services[0],
-    genres: Array.isArray(title.genre_names) ? title.genre_names : [],
-    runtime: title.runtime_minutes,
-    overview: title.plot_overview || title.user_rating ? `${title.plot_overview || ""}`.trim() : undefined,
-  }));
+  return titles
+    .filter((title: any) => title?.title)
+    .map((title: any) => ({
+      title: title.title,
+      year: title.year,
+      service: query.services[0],
+      genres: Array.isArray(title.genre_names)
+        ? title.genre_names
+        : Array.isArray(title.genre_ids)
+          ? title.genre_ids.map(String)
+          : [],
+      runtime: title.runtime_minutes || title.runtime,
+      overview: typeof title.plot_overview === "string"
+        ? title.plot_overview
+        : typeof title.overview === "string"
+          ? title.overview
+          : undefined,
+    }));
 }
 
 export async function getLivePool(query: LivePoolQuery): Promise<LivePoolResult> {
@@ -111,7 +127,7 @@ export async function getLivePool(query: LivePoolQuery): Promise<LivePoolResult>
       source: "streaming-availability-api",
       movies: candidates.map((candidate) => normalizeCandidate(candidate, query.services[0])),
       liveCatalogReady: true,
-      note: "Using live streaming-availability inventory.",
+      note: `Using live provider inventory with ${candidates.length} live titles before ranking.`,
     };
   }
 
@@ -127,7 +143,7 @@ export async function getLivePool(query: LivePoolQuery): Promise<LivePoolResult>
     movies: filteredFallback.length ? filteredFallback : movieCatalog,
     liveCatalogReady: false,
     note: hasLiveApiKey()
-      ? "Live adapter scaffold exists, but provider fetching is not wired yet."
+      ? "API key detected, but live provider fetch returned no usable titles."
       : "API key needed to unlock live streaming inventory.",
   };
 }
