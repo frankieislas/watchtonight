@@ -11,11 +11,12 @@
 - The API route still returns pool metadata so we can inspect readiness and pool size
 
 ## API key needed next
-Set this environment variable when ready:
-- `STREAMING_AVAILABILITY_API_KEY`
+Set one of these environment variables when ready:
+- `WATCHMODE_API_KEY` (preferred, since you already obtained this)
+- `STREAMING_AVAILABILITY_API_KEY` (legacy fallback naming kept in code)
 
 ## Next implementation step once key is available
-Wire `fetchStreamingAvailabilityCandidates()` in `app/src/app/lib/live-pool.ts` to the chosen provider.
+Wire `fetchStreamingAvailabilityCandidates()` in `app/src/app/lib/live-pool.ts` to the chosen provider. This has now been started for Watchmode.
 
 ## Desired end state
 - fetch live candidate movies by selected providers/services

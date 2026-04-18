@@ -8,8 +8,12 @@ import {
   ProviderMovieCandidate,
 } from "@/app/lib/live-recommendation-types";
 
+function getLiveApiKey() {
+  return process.env.WATCHMODE_API_KEY || process.env.STREAMING_AVAILABILITY_API_KEY || "";
+}
+
 function hasLiveApiKey() {
-  return Boolean(process.env.STREAMING_AVAILABILITY_API_KEY);
+  return Boolean(getLiveApiKey());
 }
 
 function normalizeCandidate(candidate: ProviderMovieCandidate, fallbackService?: string): MoviePick {
@@ -43,14 +47,60 @@ function normalizeCandidate(candidate: ProviderMovieCandidate, fallbackService?:
   };
 }
 
-async function fetchStreamingAvailabilityCandidates(_query: LivePoolQuery): Promise<ProviderMovieCandidate[]> {
-  if (!hasLiveApiKey()) {
+async function fetchStreamingAvailabilityCandidates(query: LivePoolQuery): Promise<ProviderMovieCandidate[]> {
+  const apiKey = getLiveApiKey();
+  if (!apiKey) {
     return [];
   }
 
-  // Integration scaffold only for now. When the API key is available,
-  // this function becomes the single place to wire the provider request.
-  return [];
+  const serviceMap: Record<string, number> = {
+    "Netflix": 203,
+    "Hulu": 157,
+    "Max": 387,
+    "Prime Video": 26,
+    "Disney+": 372,
+    "Apple TV+": 371,
+    "Peacock": 386,
+    "Paramount+": 388,
+  };
+
+  const sourceIds = query.services
+    .map((service) => serviceMap[service])
+    .filter(Boolean)
+    .join(",");
+
+  const url = new URL("https://api.watchmode.com/v1/list-titles/");
+  url.searchParams.set("apiKey", apiKey);
+  url.searchParams.set("types", "movie");
+  url.searchParams.set("regions", (query.country || "us").toUpperCase());
+  url.searchParams.set("limit", "40");
+  url.searchParams.set("sort_by", "popularity_desc");
+  if (sourceIds) {
+    url.searchParams.set("source_ids", sourceIds);
+  }
+
+  const response = await fetch(url.toString(), {
+    headers: {
+      Accept: "application/json",
+    },
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    return [];
+  }
+
+  const data = await response.json();
+  const titles = Array.isArray(data.titles) ? data.titles : Array.isArray(data) ? data : [];
+
+  return titles.map((title: any) => ({
+    title: title.title,
+    year: title.year,
+    service: query.services[0],
+    genres: Array.isArray(title.genre_names) ? title.genre_names : [],
+    runtime: title.runtime_minutes,
+    overview: title.plot_overview || title.user_rating ? `${title.plot_overview || ""}`.trim() : undefined,
+  }));
 }
 
 export async function getLivePool(query: LivePoolQuery): Promise<LivePoolResult> {
