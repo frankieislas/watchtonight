@@ -56,6 +56,7 @@ export function ResultsView({ input }: { input: RecommendationInput }) {
                 Why it fits tonight
               </h3>
               <p className="mt-2 text-sm leading-6 text-slate-300">{pick.whyTonight}</p>
+              <p className="mt-3 text-sm leading-6 text-slate-200">{pick.friendNote}</p>
               <ul className="mt-4 space-y-2 text-sm text-slate-400">
                 {pick.reasons.map((reason) => (
                   <li key={reason}>• {reason}</li>

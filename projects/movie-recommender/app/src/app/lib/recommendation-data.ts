@@ -74,6 +74,7 @@ export type RankedRecommendation = MoviePick & {
   score: number;
   reasons: string[];
   caution?: string;
+  friendNote: string;
 };
 
 export const movieCatalog: MoviePick[] = [
@@ -500,23 +501,23 @@ function buildReasons(movie: MoviePick, input: RecommendationInput, matchedGenre
   const reasons: string[] = [];
 
   if (input.services.includes(movie.service)) {
-    reasons.push(`available on ${movie.service}`);
+    reasons.push(`it is on ${movie.service}`);
   }
 
   if (matchedGenres.length) {
-    reasons.push(`matches your ${matchedGenres.join(" + ")} taste`);
+    reasons.push(`it leans into ${matchedGenres.join(" and ")}`);
   }
 
   if (input.mood && movie.moods.includes(input.mood)) {
-    reasons.push(`fits a ${input.mood.toLowerCase()} night`);
+    reasons.push(`it fits a ${input.mood.toLowerCase()} night`);
   }
 
   if (input.energy && movie.energy === input.energy) {
-    reasons.push(`matches your ${input.energy.toLowerCase()}-energy mood`);
+    reasons.push(`its energy matches what you asked for`);
   }
 
   if (input.company && movie.bestFor.includes(input.company)) {
-    reasons.push(`works well for ${input.company.toLowerCase()}`);
+    reasons.push(`it plays well for ${input.company.toLowerCase()}`);
   }
 
   if (!reasons.length) {
@@ -524,6 +525,32 @@ function buildReasons(movie: MoviePick, input: RecommendationInput, matchedGenre
   }
 
   return reasons;
+}
+
+function buildFriendNote(movie: MoviePick, input: RecommendationInput) {
+  const notes: string[] = [];
+
+  if (input.mood && movie.moods.includes(input.mood)) {
+    notes.push(`This feels right for a ${input.mood.toLowerCase()} night`);
+  }
+
+  if (input.company && movie.bestFor.includes(input.company)) {
+    notes.push(`it should land well for ${input.company.toLowerCase()}`);
+  }
+
+  if (input.maxRuntime && input.maxRuntime !== "Any") {
+    notes.push(`it stays within your ${input.maxRuntime}-minute ceiling`);
+  }
+
+  if (movie.conversationStarter && input.company === "Date night") {
+    notes.push(`and it gives you something to talk about after`);
+  }
+
+  if (!notes.length) {
+    notes.push(`This is here because it is a strong fit without feeling generic`);
+  }
+
+  return `${notes.join(", ")}.`;
 }
 
 function runtimeLimitFromInput(maxRuntime: string) {
@@ -619,7 +646,7 @@ export function getRecommendations(input: RecommendationInput): RankedRecommenda
         caution = `Possible mismatch: this one runs ${movie.runtime} minutes.`;
       }
 
-      return { ...movie, score, reasons, caution };
+      return { ...movie, score, reasons, caution, friendNote: buildFriendNote(movie, input) };
     })
     .sort((a, b) => b.score - a.score || a.runtime - b.runtime);
 
@@ -638,6 +665,7 @@ export function getRecommendations(input: RecommendationInput): RankedRecommenda
       caution: hasServiceFilter
         ? `Outside your selected services, included only because the exact pool was too small.`
         : undefined,
+      friendNote: `This is a fallback pick only because the exact filtered pool was too thin.`,
     }))
     .sort((a, b) => a.runtime - b.runtime);
 
