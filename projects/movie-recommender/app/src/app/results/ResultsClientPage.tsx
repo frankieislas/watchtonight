@@ -146,6 +146,13 @@ export function ResultsClientPage() {
           If one of these feels right, go watch it. If not, head back to the
           recommendation page or leave feedback for the next product pass.
         </p>
+        <div className="mt-4 rounded-2xl border border-white/10 bg-black/10 p-4 text-indigo-50">
+          <p className="font-semibold">Would you pay for a smarter version of this?</p>
+          <p className="mt-2 text-sm text-indigo-100/85">
+            We are testing whether people want a premium version with better personalization,
+            stronger movie memory, and faster movie-night decisions.
+          </p>
+        </div>
         <div className="mt-4 flex flex-wrap gap-4">
           <Link
             href="/recommend"
