@@ -1,18 +1,22 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { defaultTasteMemory, tasteMemoryStorageKey, TasteMemory } from "@/app/lib/taste-memory";
+import { bumpAffinity, defaultTasteMemory, tasteMemoryStorageKey, TasteMemory } from "@/app/lib/taste-memory";
 import { feedbackMemoryStorageKey, FeedbackMemoryEntry } from "@/app/lib/feedback-memory";
 
 const watched = [
   {
     title: "Ex Machina",
     service: "Max",
+    genres: ["Sci-fi", "Thriller"],
+    moods: ["Thoughtful", "Tense"],
     why: "Sharp sci-fi with real atmosphere and a high-confidence recommendation profile.",
   },
   {
     title: "Palm Springs",
     service: "Hulu",
+    genres: ["Comedy", "Romance"],
+    moods: ["Fun", "Easy watch"],
     why: "A high-utility choice when the user wants something fun, easy, and still genuinely good.",
   },
 ];
@@ -54,11 +58,16 @@ export default function FeedbackPage() {
   const feedbackCount = useMemo(() => entries.length, [entries.length]);
 
   const saveFeedback = () => {
+    const matchedMovie = watched.find((movie) => movie.title === title);
+
     const nextEntry: FeedbackMemoryEntry = {
       title: title || "Untitled movie",
       rating,
       liked,
       disliked,
+      service: matchedMovie?.service,
+      genres: matchedMovie?.genres || [],
+      moods: matchedMovie?.moods || [],
       updatedAt: "Saved from feedback screen",
     };
 
@@ -75,9 +84,33 @@ export default function FeedbackPage() {
         .filter(Boolean),
     ])];
 
+    const ratingNumber = Number(rating);
+    const positiveSignal = Number.isFinite(ratingNumber) ? ratingNumber >= 7 : liked.trim().length > disliked.trim().length;
+
     const nextTasteMemory: TasteMemory = {
       ...tasteMemory,
       avoidPhrases: nextAvoidPhrases,
+      likedTitles: positiveSignal
+        ? [...new Set([nextEntry.title, ...tasteMemory.likedTitles])].slice(0, 20)
+        : tasteMemory.likedTitles,
+      dislikedTitles: !positiveSignal
+        ? [...new Set([nextEntry.title, ...tasteMemory.dislikedTitles])].slice(0, 20)
+        : tasteMemory.dislikedTitles,
+      genreAffinity: bumpAffinity(
+        tasteMemory.genreAffinity,
+        nextEntry.genres || [],
+        positiveSignal ? 2 : -2,
+      ),
+      moodAffinity: bumpAffinity(
+        tasteMemory.moodAffinity,
+        nextEntry.moods || [],
+        positiveSignal ? 2 : -1,
+      ),
+      serviceAffinity: bumpAffinity(
+        tasteMemory.serviceAffinity,
+        nextEntry.service ? [nextEntry.service] : [],
+        positiveSignal ? 1 : -1,
+      ),
       lastUpdatedLabel: `Learned from feedback on ${nextEntry.title}`,
     };
 

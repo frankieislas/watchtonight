@@ -68,6 +68,13 @@ export type RecommendationInput = {
   energy: EnergyLevel | "";
   company: CompanyType | "";
   maxRuntime: string;
+  memorySignals?: {
+    likedTitles?: string[];
+    dislikedTitles?: string[];
+    genreAffinity?: Record<string, number>;
+    moodAffinity?: Record<string, number>;
+    serviceAffinity?: Record<string, number>;
+  };
 };
 
 export type RankedRecommendation = MoviePick & {
@@ -784,6 +791,19 @@ export function getRecommendations(
       if (movie.intensity === "low" && input.mood === "Easy watch") score += 4;
       if (movie.intensity === "high" && (input.mood === "Dark" || input.mood === "Tense")) score += 3;
       if (movie.runtime <= 110) score += 2;
+
+      const genreAffinity = input.memorySignals?.genreAffinity || {};
+      const moodAffinity = input.memorySignals?.moodAffinity || {};
+      const serviceAffinity = input.memorySignals?.serviceAffinity || {};
+      const likedTitles = input.memorySignals?.likedTitles || [];
+      const dislikedTitles = input.memorySignals?.dislikedTitles || [];
+
+      score += matchedGenres.reduce((sum, genre) => sum + (genreAffinity[genre] || 0), 0);
+      score += movie.moods.reduce((sum, mood) => sum + (moodAffinity[mood] || 0), 0);
+      score += serviceAffinity[movie.service] || 0;
+
+      if (likedTitles.includes(movie.title)) score += 6;
+      if (dislikedTitles.includes(movie.title)) score -= 10;
 
       const matchedAvoidTag = movie.avoidTags.find((tag) => avoidText.includes(tag));
       if (matchedAvoidTag) {

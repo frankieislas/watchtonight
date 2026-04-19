@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { ResultsView } from "./ResultsView";
 import { RecommendationInput } from "@/app/lib/recommendation-data";
+import { defaultTasteMemory, tasteMemoryStorageKey, TasteMemory } from "@/app/lib/taste-memory";
 
 function parseList(value?: string | null) {
   if (!value) return [];
@@ -13,8 +14,23 @@ function parseList(value?: string | null) {
     .filter(Boolean);
 }
 
+function loadTasteMemory(): TasteMemory {
+  if (typeof window === "undefined") return defaultTasteMemory;
+
+  const stored = window.localStorage.getItem(tasteMemoryStorageKey);
+  if (!stored) return defaultTasteMemory;
+
+  try {
+    return JSON.parse(stored) as TasteMemory;
+  } catch {
+    return defaultTasteMemory;
+  }
+}
+
 export function ResultsClientPage() {
   const searchParams = useSearchParams();
+
+  const memory = loadTasteMemory();
 
   const input: RecommendationInput = {
     services: parseList(searchParams.get("services")),
@@ -24,6 +40,13 @@ export function ResultsClientPage() {
     energy: (searchParams.get("energy") as RecommendationInput["energy"]) || "",
     company: (searchParams.get("company") as RecommendationInput["company"]) || "",
     maxRuntime: searchParams.get("maxRuntime") || "120",
+    memorySignals: {
+      likedTitles: memory.likedTitles,
+      dislikedTitles: memory.dislikedTitles,
+      genreAffinity: memory.genreAffinity,
+      moodAffinity: memory.moodAffinity,
+      serviceAffinity: memory.serviceAffinity,
+    },
   };
 
   return (

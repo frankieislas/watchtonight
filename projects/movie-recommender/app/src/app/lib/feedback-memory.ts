@@ -3,6 +3,9 @@ export type FeedbackMemoryEntry = {
   rating: string;
   liked: string;
   disliked: string;
+  service?: string;
+  genres?: string[];
+  moods?: string[];
   updatedAt: string;
 };
 

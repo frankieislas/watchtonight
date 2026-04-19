@@ -71,13 +71,21 @@ export function RecommendationForm() {
   const saveProfile = () => {
     const nextMemory: TasteMemory = {
       favoriteGenres: selectedGenres,
-      dislikedGenres: [],
+      dislikedGenres: memory.dislikedGenres || [],
       defaultServices: selectedServices,
       preferredMood: selectedMood,
       avoidPhrases: avoid
         .split(",")
         .map((item) => item.trim())
         .filter(Boolean),
+      preferredEnergy: selectedEnergy,
+      preferredCompany: selectedCompany,
+      maxRuntimePreference: selectedMaxRuntime,
+      likedTitles: memory.likedTitles || [],
+      dislikedTitles: memory.dislikedTitles || [],
+      genreAffinity: memory.genreAffinity || {},
+      moodAffinity: memory.moodAffinity || {},
+      serviceAffinity: memory.serviceAffinity || {},
       lastUpdatedLabel: "Saved from recommendation setup",
     };
 
