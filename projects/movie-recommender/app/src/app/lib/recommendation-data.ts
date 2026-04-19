@@ -71,6 +71,10 @@ export type RecommendationInput = {
   memorySignals?: {
     likedTitles?: string[];
     dislikedTitles?: string[];
+    shownTitles?: string[];
+    openedTitles?: string[];
+    savedTitles?: string[];
+    dismissedTitles?: string[];
     genreAffinity?: Record<string, number>;
     moodAffinity?: Record<string, number>;
     serviceAffinity?: Record<string, number>;
@@ -797,6 +801,10 @@ export function getRecommendations(
       const serviceAffinity = input.memorySignals?.serviceAffinity || {};
       const likedTitles = input.memorySignals?.likedTitles || [];
       const dislikedTitles = input.memorySignals?.dislikedTitles || [];
+      const shownTitles = input.memorySignals?.shownTitles || [];
+      const openedTitles = input.memorySignals?.openedTitles || [];
+      const savedTitles = input.memorySignals?.savedTitles || [];
+      const dismissedTitles = input.memorySignals?.dismissedTitles || [];
 
       score += matchedGenres.reduce((sum, genre) => sum + (genreAffinity[genre] || 0), 0);
       score += movie.moods.reduce((sum, mood) => sum + (moodAffinity[mood] || 0), 0);
@@ -804,6 +812,10 @@ export function getRecommendations(
 
       if (likedTitles.includes(movie.title)) score += 6;
       if (dislikedTitles.includes(movie.title)) score -= 10;
+      if (shownTitles.includes(movie.title)) score += 1;
+      if (openedTitles.includes(movie.title)) score += 3;
+      if (savedTitles.includes(movie.title)) score += 5;
+      if (dismissedTitles.includes(movie.title)) score -= 6;
 
       const matchedAvoidTag = movie.avoidTags.find((tag) => avoidText.includes(tag));
       if (matchedAvoidTag) {

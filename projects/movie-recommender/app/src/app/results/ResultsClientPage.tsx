@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { ResultsView } from "./ResultsView";
-import { RecommendationInput } from "@/app/lib/recommendation-data";
-import { defaultTasteMemory, tasteMemoryStorageKey, TasteMemory } from "@/app/lib/taste-memory";
+import { getRecommendations, RecommendationInput } from "@/app/lib/recommendation-data";
+import { defaultTasteMemory, tasteMemoryStorageKey, TasteMemory, bumpAffinity } from "@/app/lib/taste-memory";
+import { recommendationOutcomesStorageKey, RecommendationOutcome } from "@/app/lib/recommendation-outcomes";
 
 function parseList(value?: string | null) {
   if (!value) return [];
@@ -27,6 +29,18 @@ function loadTasteMemory(): TasteMemory {
   }
 }
 
+function loadOutcomes(): RecommendationOutcome[] {
+  if (typeof window === "undefined") return [];
+  const stored = window.localStorage.getItem(recommendationOutcomesStorageKey);
+  if (!stored) return [];
+
+  try {
+    return JSON.parse(stored) as RecommendationOutcome[];
+  } catch {
+    return [];
+  }
+}
+
 export function ResultsClientPage() {
   const searchParams = useSearchParams();
 
@@ -43,11 +57,45 @@ export function ResultsClientPage() {
     memorySignals: {
       likedTitles: memory.likedTitles,
       dislikedTitles: memory.dislikedTitles,
+      shownTitles: memory.shownTitles,
+      openedTitles: memory.openedTitles,
+      savedTitles: memory.savedTitles,
+      dismissedTitles: memory.dismissedTitles,
       genreAffinity: memory.genreAffinity,
       moodAffinity: memory.moodAffinity,
       serviceAffinity: memory.serviceAffinity,
     },
   };
+
+  const picks = getRecommendations(input);
+
+  useEffect(() => {
+    const outcomes = loadOutcomes();
+    const timestamp = new Date().toISOString();
+
+    const nextOutcomes = [
+      ...picks.map((pick) => ({
+        title: pick.title,
+        service: pick.service,
+        action: "shown" as const,
+        timestamp,
+      })),
+      ...outcomes,
+    ].slice(0, 80);
+
+    window.localStorage.setItem(recommendationOutcomesStorageKey, JSON.stringify(nextOutcomes));
+
+    const nextMemory: TasteMemory = {
+      ...memory,
+      shownTitles: [...new Set([...picks.map((pick) => pick.title), ...memory.shownTitles])].slice(0, 40),
+      genreAffinity: bumpAffinity(memory.genreAffinity, input.genres, 0.3),
+      moodAffinity: input.mood ? bumpAffinity(memory.moodAffinity, [input.mood], 0.3) : memory.moodAffinity,
+      serviceAffinity: bumpAffinity(memory.serviceAffinity, input.services, 0.2),
+      lastUpdatedLabel: "Learned from recommendation outcomes",
+    };
+
+    window.localStorage.setItem(tasteMemoryStorageKey, JSON.stringify(nextMemory));
+  }, []);
 
   return (
     <div className="mx-auto max-w-5xl space-y-8">
@@ -90,7 +138,7 @@ export function ResultsClientPage() {
         ) : null}
       </section>
 
-      <ResultsView input={input} />
+      <ResultsView input={input} picks={picks} />
 
       <section className="rounded-3xl border border-indigo-400/20 bg-indigo-500/10 p-6 text-sm text-indigo-100">
         <p className="font-semibold">What to do next</p>

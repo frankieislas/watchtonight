@@ -1,4 +1,4 @@
-import { getRecommendations, RecommendationInput } from "@/app/lib/recommendation-data";
+import { RankedRecommendation, RecommendationInput } from "@/app/lib/recommendation-data";
 
 function getDecisionAngle(index: number) {
   if (index === 0) return "Best overall pick";
@@ -18,8 +18,7 @@ function getDecisionSummary(index: number, runtime: number, intensity: string, v
   return "This is the wildcard, picked to give you a meaningfully different flavor instead of a near-duplicate.";
 }
 
-export function ResultsView({ input }: { input: RecommendationInput }) {
-  const picks = getRecommendations(input);
+export function ResultsView({ input, picks }: { input: RecommendationInput; picks: RankedRecommendation[] }) {
 
   return (
     <div className="grid gap-5">

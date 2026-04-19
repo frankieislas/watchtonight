@@ -9,6 +9,10 @@ export type TasteMemory = {
   maxRuntimePreference?: string;
   likedTitles: string[];
   dislikedTitles: string[];
+  shownTitles: string[];
+  openedTitles: string[];
+  savedTitles: string[];
+  dismissedTitles: string[];
   genreAffinity: Record<string, number>;
   moodAffinity: Record<string, number>;
   serviceAffinity: Record<string, number>;
@@ -26,6 +30,10 @@ export const defaultTasteMemory: TasteMemory = {
   maxRuntimePreference: "120",
   likedTitles: [],
   dislikedTitles: [],
+  shownTitles: [],
+  openedTitles: [],
+  savedTitles: [],
+  dismissedTitles: [],
   genreAffinity: {},
   moodAffinity: {},
   serviceAffinity: {},
