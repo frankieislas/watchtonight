@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { WaitlistForm } from "./components/WaitlistForm";
 
 export default function Home() {
   return (
@@ -56,6 +57,8 @@ export default function Home() {
               </p>
             </div>
           </div>
+
+          <WaitlistForm />
         </section>
       </div>
     </main>
