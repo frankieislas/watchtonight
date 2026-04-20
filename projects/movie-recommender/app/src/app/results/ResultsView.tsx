@@ -1,4 +1,67 @@
+"use client";
+
 import { RankedRecommendation, RecommendationInput } from "@/app/lib/recommendation-data";
+import { recommendationOutcomesStorageKey, RecommendationOutcome } from "@/app/lib/recommendation-outcomes";
+import { bumpAffinity, defaultTasteMemory, tasteMemoryStorageKey, TasteMemory } from "@/app/lib/taste-memory";
+
+function loadTasteMemory(): TasteMemory {
+  if (typeof window === "undefined") return defaultTasteMemory;
+
+  const stored = window.localStorage.getItem(tasteMemoryStorageKey);
+  if (!stored) return defaultTasteMemory;
+
+  try {
+    return JSON.parse(stored) as TasteMemory;
+  } catch {
+    return defaultTasteMemory;
+  }
+}
+
+function loadOutcomes(): RecommendationOutcome[] {
+  if (typeof window === "undefined") return [];
+  const stored = window.localStorage.getItem(recommendationOutcomesStorageKey);
+  if (!stored) return [];
+
+  try {
+    return JSON.parse(stored) as RecommendationOutcome[];
+  } catch {
+    return [];
+  }
+}
+
+function trackOutcome(pick: RankedRecommendation, action: RecommendationOutcome["action"]) {
+  if (typeof window === "undefined") return;
+
+  const outcomes = loadOutcomes();
+  const timestamp = new Date().toISOString();
+  const nextOutcomes = [
+    { title: pick.title, service: pick.service, action, timestamp },
+    ...outcomes,
+  ].slice(0, 120);
+  window.localStorage.setItem(recommendationOutcomesStorageKey, JSON.stringify(nextOutcomes));
+
+  const memory = loadTasteMemory();
+  const delta = action === "saved" ? 3 : action === "opened" ? 2 : action === "dismissed" ? -3 : 0;
+
+  const nextMemory: TasteMemory = {
+    ...memory,
+    openedTitles: action === "opened"
+      ? [...new Set([pick.title, ...memory.openedTitles])].slice(0, 30)
+      : memory.openedTitles,
+    savedTitles: action === "saved"
+      ? [...new Set([pick.title, ...memory.savedTitles])].slice(0, 30)
+      : memory.savedTitles,
+    dismissedTitles: action === "dismissed"
+      ? [...new Set([pick.title, ...memory.dismissedTitles])].slice(0, 30)
+      : memory.dismissedTitles,
+    genreAffinity: bumpAffinity(memory.genreAffinity, pick.genres, delta),
+    moodAffinity: bumpAffinity(memory.moodAffinity, pick.moods, delta > 0 ? 1 : delta),
+    serviceAffinity: bumpAffinity(memory.serviceAffinity, [pick.service], delta > 0 ? 1 : delta),
+    lastUpdatedLabel: `Learned from ${action} on ${pick.title}`,
+  };
+
+  window.localStorage.setItem(tasteMemoryStorageKey, JSON.stringify(nextMemory));
+}
 
 function getDecisionAngle(index: number) {
   if (index === 0) return "Best overall pick";
@@ -68,6 +131,29 @@ export function ResultsView({ input, picks }: { input: RecommendationInput; pick
                     <li key={scenario}>• {scenario}</li>
                   ))}
                 </ul>
+              </div>
+              <div className="mt-4 flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  onClick={() => trackOutcome(pick, "saved")}
+                  className="rounded-full border border-emerald-300/30 bg-emerald-300/10 px-4 py-2 text-sm font-medium text-emerald-100 transition hover:bg-emerald-300/20"
+                >
+                  Save this
+                </button>
+                <button
+                  type="button"
+                  onClick={() => trackOutcome(pick, "opened")}
+                  className="rounded-full border border-indigo-300/30 bg-indigo-300/10 px-4 py-2 text-sm font-medium text-indigo-100 transition hover:bg-indigo-300/20"
+                >
+                  Watched / interested
+                </button>
+                <button
+                  type="button"
+                  onClick={() => trackOutcome(pick, "dismissed")}
+                  className="rounded-full border border-amber-300/30 bg-amber-300/10 px-4 py-2 text-sm font-medium text-amber-100 transition hover:bg-amber-300/20"
+                >
+                  Not for me
+                </button>
               </div>
               {pick.caution ? (
                 <p className="mt-4 rounded-2xl border border-amber-400/30 bg-amber-400/10 px-4 py-3 text-sm text-amber-200">
