@@ -3,36 +3,36 @@
 _Last updated: 2026-04-20_
 
 ## Current Top Bets
-1. WatchTonight beta, signups, and monetization validation
-2. Build a reusable business OS around Discord + OpenClaw
-3. Tighten experiment cadence and role ownership
+1. WatchTonight beta push to 25 to 50 testers
+2. Turn the Discord + OpenClaw environment into the active business OS
+3. Validate first premium monetization hook for WatchTonight
 
 ## Growth Signals
-- Testers contacted: TBD
-- Active testers: TBD
-- Waitlist signups: TBD
+- Testers contacted: in progress
+- Active testers: positive early responses
+- Waitlist signups: live capture now available
 - Repeat usage: TBD
-- Strongest segment: TBD
+- Strongest segment: movie-night decision users, still being refined
 
 ## Revenue Signals
-- Willingness to pay: positive signal present
-- Offers tested: minimal
+- Willingness to pay: positive intent signal, users said they would sign up / use it
+- Offers tested: early premium framing only
 - Revenue: $0
-- Closest path to money: premium movie recommendation layer / early access / concierge offer
+- Next revenue test: premium value proposition and early-access interest
 
 ## System Signals
-- Role clarity: improving
-- Scoreboard: created
-- Weekly cadence: created
-- Execution discipline: early but improving
+- Role clarity: improved on paper, adoption in progress
+- Scoreboard: created and now seeded
+- Weekly cadence: defined
+- Execution discipline: improving, needs live repetition
 
 ## Blockers
-- need real signup storage
-- need repeated user metrics
-- need tighter weekly operating rhythm
+- waitlist needs durable storage / backend if signups grow
+- tester metrics still partly manual
+- first premium offer not yet explicitly tested
 
 ## This Week
-- capture signups reliably
-- run more beta outreach
-- assign roles and outputs explicitly
-- use command desk + scoreboard as actual operating system
+1. push WatchTonight to 25 to 50 testers
+2. capture signups and premium-interest responses
+3. use command-desk + scoreboard as the actual operating layer
+4. collect enough signal to decide the next monetization move
